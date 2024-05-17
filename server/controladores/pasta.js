@@ -32,8 +32,6 @@ const postPasta = async (req, res) => {
   }
 };
 
-
-
 const getPastasAluno = async (req, res) => {
   const email = req.params.email;
 
@@ -41,12 +39,34 @@ const getPastasAluno = async (req, res) => {
     const pastas = await servicoPasta.listarPastasAluno(email);
     res.status(200).json(pastas);
   } catch (error) {
-    console.error('Erro ao listar pastas do aluno:', error);
-    res.status(500).json({ error: 'Erro ao listar pastas do aluno' });
+    console.error("Erro ao listar pastas do aluno:", error);
+    res.status(500).json({ error: "Erro ao listar pastas do aluno" });
+  }
+};
+
+const getPastaPorId = async (req, res) => {
+  const { id, email } = req.params;
+
+  try {
+    if (!userId) {
+      return res.status(401).send("Usuário não autenticado");
+    }
+    const userId = req.session.userId;
+    const pasta = await servicoPasta.getPastaPorId(id, userId);
+    if (!pasta) {
+      return res
+        .status(404)
+        .json({ error: "Pasta não encontrada ou não pertence ao aluno" });
+    }
+    res.json(pasta);
+  } catch (error) {
+    console.error("Erro ao obter pasta:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
 
 module.exports = {
   getPastasAluno,
   postPasta,
+  getPastaPorId,
 };

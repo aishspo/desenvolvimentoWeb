@@ -5,27 +5,31 @@
 const db = require("../server.js"); // arquivo de configuração do banco de dados
 
 const servicoPasta = {
+  criarPasta: (aluno_email, nomePasta) => {
+    return new Promise((resolve, reject) => {
+      try {
+        // Verifica se o aluno com o email fornecido existe
+        const aluno = db.query("SELECT * FROM alunos WHERE email = ?", [
+          aluno_email,
+        ]);
 
-criarPasta: (aluno_email, nomePasta) => {
-  return new Promise((resolve, reject) => {
-    try {
-      // Verifica se o aluno com o email fornecido existe
-      const aluno = db.query("SELECT * FROM alunos WHERE email = ?", [aluno_email]);
+        // Se o aluno não existir, retorne um erro
+        if (aluno.length === 0) {
+          throw new Error("Aluno não encontrado");
+        }
 
-      // Se o aluno não existir, retorne um erro
-      if (aluno.length === 0) {
-        throw new Error("Aluno não encontrado");
+        // Cria a pasta associada ao aluno correspondente
+        db.query("INSERT INTO pastas (nome, aluno_email) VALUES (?, ?)", [
+          nomePasta,
+          aluno_email,
+        ]);
+
+        resolve("Pasta criada com sucesso");
+      } catch (error) {
+        reject(`Erro ao criar pasta: ${error.message}`);
       }
-
-      // Cria a pasta associada ao aluno correspondente
-     db.query("INSERT INTO pastas (nome, aluno_email) VALUES (?, ?)", [nomePasta, aluno_email]);
-
-      resolve("Pasta criada com sucesso");
-    } catch (error) {
-      reject(`Erro ao criar pasta: ${error.message}`);
-    }
-  });
-},
+    });
+  },
 
   // criarPasta: async (nome, aluno_email) => {
   //   return new Promise((resolve, reject) => {
@@ -55,7 +59,8 @@ criarPasta: (aluno_email, nomePasta) => {
 
   listarPastasAluno: (email) => {
     return new Promise((resolve, reject) => {
-      const sql = 'SELECT pastas.id, pastas.nome FROM pastas INNER JOIN alunos ON pastas.aluno_email = alunos.email WHERE alunos.email = ?';
+      const sql =
+        "SELECT pastas.id, pastas.nome FROM pastas INNER JOIN alunos ON pastas.aluno_email = alunos.email WHERE alunos.email = ?";
       db.query(sql, [email], (error, results) => {
         if (error) {
           reject(error);
@@ -64,9 +69,27 @@ criarPasta: (aluno_email, nomePasta) => {
         }
       });
     });
-  }
+  },
+
+  getPastaPorId: (idPasta, emailAluno) => {
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT * FROM pastas WHERE id = ? AND aluno_email = ?";
+      try {
+        const pasta = db.query(sql, [idPasta, emailAluno], (error, results) => {
+          if (pasta.length === 0) {
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        });
+        return pasta[0];
+      } catch (error) {
+        throw new Error(`Erro ao obter pasta: ${error.message}`);
+      }
+    });
+  },
 };
 
 module.exports = {
-  servicoPasta,
+  servicoPasta
 };
