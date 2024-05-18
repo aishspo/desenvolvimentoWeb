@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import IUsuario from '../../types/IUsuario';
+import { useNavigate } from 'react-router-dom';
+
 
 const Cadastro: React.FC = () => {
   const [name, setName] = useState("");
@@ -8,6 +10,11 @@ const Cadastro: React.FC = () => {
   const [senha, setSenha] = useState("");
   const [ocupacao, setOcupacao] = useState("");
   const [disciplina, setDisciplina] = useState("");
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -70,6 +77,7 @@ const Cadastro: React.FC = () => {
         <input type="text" value={disciplina} onChange={handleDisciplinaChange} />
       </div>
       <button onClick={handleSubmit}>Cadastrar</button>
+      <button onClick={handleBack}>Voltar</button>
     </div>)
 };
 

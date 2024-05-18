@@ -57,6 +57,18 @@ const postUsuario = async (req, res) => {
   }
 };
 
+const createAluno = async (req, res) => {
+  const { nome, email, senha } = req.body;
+
+  try {
+    await userService.createUser({ nome, email, senha });
+    res.status(201).send('Usuário criado com sucesso');
+  } catch (error) {
+    console.error('Erro ao criar usuário', error);
+    res.status(500).send('Erro ao criar usuário');
+  }
+};
+
 const patchAluno = async (req, res) => {
   const { email } = req.params;
   const { nome, senha } = req.body;
@@ -82,7 +94,7 @@ const deleteAluno = async (req, res) => {
   const email = req.params.email;
 
   try {
-    await deleteAluno(email);
+    await servicoUsuario.deletarAluno(email);
     res.status(200).json({ message: "Aluno deletado com sucesso" });
   } catch (error) {
     console.error("Erro ao deletar aluno:", error);
@@ -105,7 +117,6 @@ const getPastasAluno = async (req, res) => {
 
 module.exports = {
   getUsuarios,
-  // getUsuario,
   postUsuario,
   deleteAluno,
   patchAluno,

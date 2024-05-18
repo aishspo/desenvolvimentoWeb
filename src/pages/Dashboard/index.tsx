@@ -1,17 +1,18 @@
 // src/components/Dashboard.js
 import { useNavigate } from 'react-router-dom';
-import api from'../../api';
+import axios from 'axios';
 
 function Dashboard() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      const response = await api.post('/auth/logout');
+      const response = await axios.post('http://localhost:8000/auth/logout', {}, { withCredentials: true });
       if (response.status === 200) {
         navigate('/auth');
       }
     } catch (error) {
+      console.error('Erro ao deslogar', error);
       alert('Erro ao deslogar');
     }
   };

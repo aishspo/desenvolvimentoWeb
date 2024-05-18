@@ -6,6 +6,7 @@ import Cadastro from "./pages/Cadastro/index.tsx";
 import ListaPastas from "./pages/ListarPastas/index.tsx";
 import Login from "./pages/Login/index.tsx";
 import Dashboard from "./pages/Dashboard/index.tsx";
+import ListarAlunos from "./pages/ListarAlunos/index.tsx";
 
 function AppRoutes() {
   return (
@@ -17,6 +18,7 @@ function AppRoutes() {
         <Route path="/auth" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/listarAlunos" element={<ListarAlunos/>} />
       </Routes>
     </BrowserRouter>
   );

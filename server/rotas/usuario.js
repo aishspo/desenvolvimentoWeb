@@ -12,8 +12,4 @@ router.post("/", postUsuario)
 router.patch("/:email", patchAluno)
 router.delete("/:email", deleteAluno)
 
-router.delete("/", (req, res) => {
-  res.send("Você fez uma requisição do tipo DELETE");
-});
-
 module.exports = router;

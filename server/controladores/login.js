@@ -20,15 +20,16 @@ async function loginAluno(req, res) {
     }
   }
 
-  const logout = (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error('Erro ao deslogar', err);
-        res.status(500).send('Erro ao deslogar');
-      } else {
-        res.send('Logout realizado com sucesso');
-      }
-    });
+  
+
+  const logout = async (req, res) => {
+    try {
+      await login.logoutUser(req);
+      res.send('Logout realizado com sucesso');
+    } catch (error) {
+      console.error('Erro no logout', error);
+      res.status(500).send('Erro ao realizar logout');
+    }
   };
 
 

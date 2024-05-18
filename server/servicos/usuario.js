@@ -218,7 +218,8 @@ const servicoUsuario = {
 
   listarPastasAluno: (email) => {
     return new Promise((resolve, reject) => {
-      const sql = 'SELECT pastas.id, pastas.nome FROM pastas INNER JOIN alunos ON pastas.aluno_email = alunos.email WHERE alunos.email = ?';
+      const sql =
+        "SELECT pastas.id, pastas.nome FROM pastas INNER JOIN alunos ON pastas.aluno_email = alunos.email WHERE alunos.email = ?";
       db.query(sql, [email], (error, results) => {
         if (error) {
           reject(error);
@@ -227,9 +228,45 @@ const servicoUsuario = {
         }
       });
     });
-  }
-};
+  },
 
+  deletarAluno: (email) => {
+    return new Promise((resolve, reject) => {
+      db.beginTransaction((err) => {
+        if (err) {
+          return reject(err);
+        }
+  
+        // Delete folders associated with the user
+        db.query('DELETE FROM pastas WHERE aluno_email = ?', [email], (error, results) => {
+          if (error) {
+            return db.rollback(() => {
+              reject(error);
+            });
+          }
+  
+          // Delete the user
+          db.query('DELETE FROM alunos WHERE email = ?', [email], (error, results) => {
+            if (error) {
+              return db.rollback(() => {
+                reject(error);
+              });
+            }
+  
+            db.commit((err) => {
+              if (err) {
+                return db.rollback(() => {
+                  reject(err);
+                });
+              }
+              resolve(results);
+            });
+          });
+        });
+      });
+    });
+  },
+};
 
 module.exports = {
   servicoUsuario,

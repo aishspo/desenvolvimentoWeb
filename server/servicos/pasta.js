@@ -31,19 +31,6 @@ const servicoPasta = {
     });
   },
 
-  // criarPasta: async (nome, aluno_email) => {
-  //   return new Promise((resolve, reject) => {
-  //     const sql = "INSERT INTO pastas (nome, aluno_email) VALUES (?, ?)";
-  //     db.query(sql, [nome, aluno_email], (error, results) => {
-  //       if (error) {
-  //         reject(error);
-  //       } else {
-  //         resolve(results);
-  //       }
-  //     });
-  //   });
-  // },
-
   getPasta: (aluno_email) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM pastas WHERE aluno_email = ?`;

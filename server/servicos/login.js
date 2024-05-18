@@ -28,6 +28,21 @@ const login = (email, senha, callback) => {
   });
 };
 
+
+
+const logoutUser = (req) => {
+  return new Promise((resolve, reject) => {
+    req.session.destroy((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
 module.exports = {
   login,
+  logoutUser
 };
