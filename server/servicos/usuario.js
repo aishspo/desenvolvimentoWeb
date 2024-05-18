@@ -92,33 +92,6 @@ const servicoUsuario = {
     });
   },
 
-  // atualizaAluno: (email, nome, senha) => {
-  //   return new Promise((resolve, reject) => {
-  //     const sql = "UPDATE alunos SET nome = ?, senha = ? WHERE email = ?";
-  //     db.query(sql, [nome, senha, email], (error, results) => {
-  //       if(error) {
-  //         reject(error)
-  //       } else {
-  //         resolve(results)
-  //       }
-  //     })
-  //   })},
-
-  //   atualizaAluno: (email, nome, senha) => {
-  //     return new Promise((resolve, reject) => {
-  //         const sql = "UPDATE alunos SET nome = ?, senha = ? WHERE email = ?";
-  //         db.query(sql, [nome, senha, email], (error, results) => {
-  //             if (error) {
-  //                 reject(error);
-  //             } else if (results.affectedRows === 0) {
-  //                 reject(new Error("Nenhum aluno encontrado com o email fornecido."));
-  //             } else {
-  //                 resolve(results);
-  //             }
-  //         });
-  //     });
-  // },
-
   atualizaAluno: (email, nome, senha) => {
     return new Promise((resolve, reject) => {
       let sql = "UPDATE alunos SET";
@@ -166,11 +139,6 @@ const servicoUsuario = {
       });
     });
   },
-
-  // removeProfessor: async (email) => {
-  //   const sql = "DELETE FROM professores WHERE email = ?";
-  //   await db.query(sql, [email]);
-  // },
 
   getAlunos: () => {
     return new Promise((resolve, reject) => {

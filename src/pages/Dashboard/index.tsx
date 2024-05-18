@@ -1,6 +1,6 @@
 // src/components/Dashboard.js
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -17,9 +17,13 @@ function Dashboard() {
     }
   };
 
+  const handleListarAlunos = () => {
+    navigate("/listarAlunos");
+  };
   return (
     <div>
       <h2>Bem-vindo à tela principal</h2>
+      <button onClick={handleListarAlunos}>Listar alunos</button>
       <button onClick={handleLogout}>Sair</button>
     </div>
   );

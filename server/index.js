@@ -43,8 +43,8 @@ app.use(
 const { loginAluno } = require("./controladores/login");
 app.use("/auth", loginAluno);
 
-const dashboardRoutes = require("./rotas/dashboard");
-app.use("/dashboard", dashboardRoutes);
+const rotaDashboard = require("./rotas/dashboard");
+app.use("/dashboard", rotaDashboard);
 
 app.listen(port, () => {
   console.log(`Escutando a porta ${port}`);

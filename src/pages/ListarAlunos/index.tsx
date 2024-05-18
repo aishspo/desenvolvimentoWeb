@@ -1,34 +1,37 @@
-import { useEffect, useState } from 'react';
-import axios, { AxiosError } from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import IAluno from "../../types/IAluno";
 
 const Alunos = () => {
-  const [alunos, setAlunos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [editingAluno, setEditingAluno] = useState(null);
-  const [nome, setNome] = useState('');
-  const [senha, setSenha] = useState('');
-  const [email, setEmail] = useState('');
+  const [alunos, setAlunos] = useState<IAluno[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [editingAluno, setEditingAluno] = useState<IAluno | null>(null);
+  const [nome, setNome] = useState<string>("");
+  const [senha, setSenha] = useState<string>("");
   const navigate = useNavigate();
-
 
   const fetchAlunos = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/usuario?ocupacao=aluno');
+      const response = await axios.get("http://localhost:8000/usuario?ocupacao=aluno");
       setAlunos(response.data);
-    } catch (error) {
-      setError(error);
+    } catch (error: any) {  // Typecasting error to any to use AxiosError
+      if (axios.isAxiosError(error)) {
+        setError(error.message);
+      } else {
+        setError("Ocorreu um erro desconhecido");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const updateAluno = async (email, nome, senha) => {
+  const updateAluno = async (email: string, nome: string, senha: string) => {
     try {
       await axios.patch(`http://localhost:8000/usuario/${email}`, { nome, senha });
       fetchAlunos();
-    } catch (err) {
+    } catch (err: any) {
       if (axios.isAxiosError(err)) {
         setError(err.message);
       } else {
@@ -41,33 +44,32 @@ const Alunos = () => {
     fetchAlunos();
   }, []);
 
-  const handleUpdate = (aluno) => {
+  const handleUpdate = (aluno: IAluno) => {
     setEditingAluno(aluno);
     setNome(aluno.nome);
-    setSenha('');
+    setSenha("");
   };
 
   const handleSave = async () => {
     if (editingAluno) {
       await updateAluno(editingAluno.email, nome, senha);
       setEditingAluno(null);
-      setNome('');
-      setSenha('');
+      setNome("");
+      setSenha("");
       fetchAlunos();
     }
   };
 
   const createAluno = () => {
-    navigate('/');
+    navigate("/");
   };
 
-
-  const handleDelete = async (email) => {
+  const handleDelete = async (email: string) => {
     try {
       await axios.delete(`http://localhost:8000/usuario/${email}`);
       fetchAlunos();
-    } catch (error) {
-      console.error('Erro ao deletar o aluno', error);
+    } catch (error: any) {
+      console.error("Erro ao deletar o aluno", error);
     }
   };
 
@@ -84,7 +86,7 @@ const Alunos = () => {
       <h2>Lista de Alunos</h2>
       <button onClick={createAluno}>Criar aluno</button>
       <ul>
-        {alunos.map(aluno => (
+        {alunos.map((aluno: IAluno) => (
           <li key={aluno.email}>
             {aluno.nome} - {aluno.email}
             <button onClick={() => handleUpdate(aluno)}>Editar</button>
@@ -104,7 +106,9 @@ const Alunos = () => {
               <label>Senha:</label>
               <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} />
             </div>
-            <button type="button" onClick={handleSave}>Salvar</button>
+            <button type="button" onClick={handleSave}>
+              Salvar
+            </button>
           </form>
         </div>
       )}

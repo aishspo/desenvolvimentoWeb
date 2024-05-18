@@ -3,8 +3,10 @@
 const express = require('express');
 const router = express.Router();
 const dashboardController = require('../controladores/dashboardController');
-const authMiddleware = require('../middleware/authMiddleware');
+const { authMiddleware, checkProfessorAuth } = require('../middleware/authMiddleware');
 
-router.get('/dashboard', authMiddleware, dashboardController.dashboard);
+
+
+router.get('/dashboard', authMiddleware, checkProfessorAuth, dashboardController.dashboard);
 
 module.exports = router;
