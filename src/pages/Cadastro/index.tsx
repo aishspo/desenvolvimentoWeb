@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import IUsuario from '../../types/IUsuario';
-import { useNavigate } from 'react-router-dom';
-
+import React, { useState } from "react";
+import axios from "axios";
+import IUsuario from "../../types/IUsuario";
+import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  Formulario,
+  Rotulo,
+  Input,
+  Button,
+  ButtonGroup,
+  CampoDigitacao,
+} from "./styles";
 
 const Cadastro: React.FC = () => {
   const [name, setName] = useState("");
@@ -54,31 +62,39 @@ const Cadastro: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Cadastro de Usuários</h1>
-      <div>
-        <label>Nome:</label>
-        <input type="text" value={name} onChange={handleNameChange} />
-      </div>
-      <div>
-        <label>Email:</label>
-        <input type="email" value={email} onChange={handleEmailChange} />
-      </div>
-      <div>
-        <label>Senha:</label>
-        <input type="password" value={senha} onChange={handleSenhaChange} />
-      </div>
-      <div>
-        <label>Ocupacao:</label>
-        <input type="text" value={ocupacao} onChange={handleOcupacaoChange} />
-      </div>
-      <div>
-        <label>Disciplina:</label>
-        <input type="text" value={disciplina} onChange={handleDisciplinaChange} />
-      </div>
-      <button onClick={handleSubmit}>Cadastrar</button>
-      <button onClick={handleBack}>Voltar</button>
-    </div>)
+    <Container>
+      <Formulario>
+        <CampoDigitacao>
+          <Rotulo>Nome</Rotulo>
+          <Input type="text" value={name} onChange={handleNameChange} />
+        </CampoDigitacao>
+        <CampoDigitacao>
+          <Rotulo>Email</Rotulo>
+          <Input type="email" value={email} onChange={handleEmailChange} />
+        </CampoDigitacao>
+        <CampoDigitacao>
+          <Rotulo>Senha</Rotulo>
+          <Input type="password" value={senha} onChange={handleSenhaChange} />
+        </CampoDigitacao>
+        <CampoDigitacao>
+          <Rotulo>Ocupação</Rotulo>
+          <Input type="text" value={ocupacao} onChange={handleOcupacaoChange} />
+        </CampoDigitacao>
+        <CampoDigitacao>
+          <Rotulo>Disciplina</Rotulo>
+          <Input
+            type="text"
+            value={disciplina}
+            onChange={handleDisciplinaChange}
+          />
+        </CampoDigitacao>
+        <ButtonGroup>
+          <Button onClick={handleSubmit}>Cadastrar</Button>
+          <Button onClick={handleBack}>Voltar</Button>
+        </ButtonGroup>
+      </Formulario>
+    </Container>
+  );
 };
 
 export default Cadastro;
