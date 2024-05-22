@@ -66,15 +66,30 @@ const Cadastro: React.FC = () => {
       <Formulario>
         <CampoDigitacao>
           <Rotulo>Nome</Rotulo>
-          <Input type="text" value={name} onChange={handleNameChange} />
+          <Input
+            type="text"
+            value={name}
+            placeholder="Nome completo"
+            onChange={handleNameChange}
+          />
         </CampoDigitacao>
         <CampoDigitacao>
           <Rotulo>Email</Rotulo>
-          <Input type="email" value={email} onChange={handleEmailChange} />
+          <Input
+            type="email"
+            value={email}
+            placeholder="exemplo@email.com"
+            onChange={handleEmailChange}
+          />
         </CampoDigitacao>
         <CampoDigitacao>
           <Rotulo>Senha</Rotulo>
-          <Input type="password" value={senha} onChange={handleSenhaChange} />
+          <Input
+            type="password"
+            value={senha}
+            placeholder="Insira sua senha"
+            onChange={handleSenhaChange}
+          />
         </CampoDigitacao>
         <CampoDigitacao>
           <Rotulo>Ocupação</Rotulo>

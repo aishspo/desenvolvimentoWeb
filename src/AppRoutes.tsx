@@ -3,7 +3,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AlteracaoUsuario from "./pages/AlteracaoUsuario.tsx";
 import Cadastro from "./pages/Cadastro/index.tsx";
-import ListaPastas from "./pages/ListarPastas/index.tsx";
+import ListaPastas from "./components/ListarPastas/index.tsx";
 import Login from "./pages/Login/index.tsx";
 import Dashboard from "./pages/Dashboard/index.tsx";
 import ListarAlunos from "./pages/ListarAlunos/index.tsx";
@@ -17,6 +17,11 @@ function AppRoutes() {
         <Route path="/usuario/:email/pastas" element={<ListaPastas />} />
         <Route path="/auth" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* <Route path="/dashboard" element={<Dashboard />}>
+          <Route path="/usuario/:email/pastas" element={<ListaPastas />} />
+        </Route>  */}
+
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/listarAlunos" element={<ListarAlunos/>} />
       </Routes>

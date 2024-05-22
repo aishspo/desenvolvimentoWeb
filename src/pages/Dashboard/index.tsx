@@ -1,9 +1,12 @@
 // src/components/Dashboard.js
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import ListaPastas from '../../components/ListarPastas';
+import Cabecalho from '../../components/Cabecalho';
 
 function Dashboard() {
   const navigate = useNavigate();
+  const email = useParams();
 
   const handleLogout = async () => {
     try {
@@ -22,9 +25,11 @@ function Dashboard() {
   };
   return (
     <div>
+      <Cabecalho />
       <h2>Bem-vindo à tela principal</h2>
       <button onClick={handleListarAlunos}>Listar alunos</button>
       <button onClick={handleLogout}>Sair</button>
+      <ListaPastas email={email} />
     </div>
   );
 }
