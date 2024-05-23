@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate  } from 'react-router-dom';
 
@@ -8,15 +8,14 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate ();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
       const response = await axios.post('http://localhost:8000/auth', { email, senha });
-      if (response.status === 200) {
-        navigate('/dashboard');
-      }
+     navigate(response.data.redirectUrl);
     } catch (error) {
-      alert('Credenciais inválidas');
+      console.error('Credenciais inválidas', error);
     }
   };
 
@@ -32,7 +31,7 @@ const Login = () => {
         <br />
         <label>
           Senha:
-          <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} />
+          <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} required/>
         </label>
         <br />
         <button type="submit">Login</button>

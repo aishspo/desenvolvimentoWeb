@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: 'Jas12/mil13',
-  database: 'teste'
+  database: 'teste',
 });
 
-connection.connect((error) => {
-  if (error) {
+pool.getConnection()
+  .then(connection => {
+    console.log('Conexão bem sucedida ao banco de dados MySQL');
+    connection.release();
+  })
+  .catch(error => {
     console.error('Erro ao conectar ao banco de dados:', error);
-    return;
-  }
-  console.log('Conexão bem sucedida ao banco de dados MySQL');
-});
+  });
 
-module.exports = connection;
+module.exports = pool;

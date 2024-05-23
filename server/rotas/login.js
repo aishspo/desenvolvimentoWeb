@@ -2,11 +2,9 @@
 // routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
-const loginAluno = require('../controladores/login');
+const {login, logout} = require('../controladores/login');
 
-router.post('/', loginAluno.loginAluno);
-
-// router.post('/logout', loginAluno.logout);
-router.post('/logout', loginAluno.logout);
+router.post('/login', login);
+router.post('/logout', logout);
 
 module.exports = router;

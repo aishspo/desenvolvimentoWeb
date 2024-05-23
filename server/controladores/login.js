@@ -1,40 +1,43 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 // controllers/authController.js
-const login = require('../servicos/login');
+const {findUserByEmail, validatePassword} = require("../servicos/login");
 
-async function loginAluno(req, res) {
-    const { email, senha } = req.body;
-    try {
-        login.login(email, senha, (err, user) => {
-        if (err) {
-          console.error('Erro na autenticação', err);
-          res.status(401).send('Credenciais inválidas');
-        } else {
-          req.session.userId = user.id;
-          res.send('Login realizado com sucesso');
-        }
-      });
-    } catch (error) {
-      console.error('Erro na autenticação', error);
-      res.status(500).send('Erro interno do servidor');
-    }
+const login = async (req, res) => {
+  const { email, senha } = req.body;
+
+  const user = await findUserByEmail(email);
+
+  if (!user) {
+    return res.status(401).json({ message: "Invalid email or password" });
   }
 
-  
+  const isValidPassword = await validatePassword(
+    senha,
+    user.user.senha
+  );
 
-  const logout = async (req, res) => {
-    try {
-      await login.logoutUser(req);
-      res.send('Logout realizado com sucesso');
-    } catch (error) {
-      console.error('Erro no logout', error);
-      res.status(500).send('Erro ao realizar logout');
+  if (!isValidPassword) {
+    return res.status(401).json({ message: "Invalid email or password" });
+  }
+
+  req.session.userId = user.user.id;
+  req.session.userType = user.type;
+
+  const redirectUrl =
+    user.type === "aluno" ? "/aluno-dashboard" : "/professor-dashboard";
+  return res.json({ message: "Login successful", redirectUrl });
+};
+
+const logout = (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Error logging out" });
     }
-  };
-
-
+    res.clearCookie("connect.sid");
+    res.json({ message: "Logout successful" });
+  });
+};
 
 module.exports = {
-    loginAluno,
-    logout
-};
+  login, logout
+}

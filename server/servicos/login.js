@@ -1,63 +1,40 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 // services/authService.js
 const db = require("../server.js");
+const bcrypt = require("bcryptjs");
 
-const login = (email, senha, callback) => {
-  db.connect((err) => {
-    if (err) {
-      callback(err, null);
-      return;
+const findUserByEmail = async (email) => {
+  try {
+    const [alunos] = await db.query("SELECT * FROM alunos WHERE email = ?", [
+      email,
+  ]);
+    if (alunos.length > 0) {
+      return { type: "aluno", user: alunos[0] };
     }
+  
+    const [professores] = await db.query("SELECT * FROM professores WHERE email = ?", [
+      email,
+    ]);
+    if (professores.length > 0) {
+      return { type: "professor", user: professores[0] };
+    }
+  
+    return null;
 
-    // Primeiro, tentar autenticar como aluno
-    db.query(
-      "SELECT * FROM alunos WHERE email = ? AND senha = ?",
-      [email, senha],
-      (err, results) => {
-        if (err) {
-          db.end();
-          callback(err, null);
-        } else if (results.length > 0) {
-          db.end();
-          callback(null, { user: results[0], type: 'aluno' });
-        } else {
-          // Se não encontrou na tabela de alunos, tentar na tabela de professores
-          db.query(
-            "SELECT * FROM professores WHERE email = ? AND senha = ?",
-            [email, senha],
-            (err, results) => {
-              if (err) {
-                callback(err, null);
-              } else if (results.length > 0) {
-                callback(null, { user: results[0], type: 'professor' });
-              } else {
-                callback(new Error("Credenciais inválidas"), null);
-              }
-              db.end();
-            }
-          );
-        }
-      }
-    );
-  });
+  }
+} catch (error) {
+  throw error;
+}
 };
 
-
-
-
-const logoutUser = (req) => {
-  return new Promise((resolve, reject) => {
-    req.session.destroy((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    });
-  });
+const validatePassword = async (
+  inputPassword,
+  senha
+) => {
+  return bcrypt.compare(inputPassword, senha);
 };
 
 module.exports = {
-  login,
-  logoutUser
+  findUserByEmail,
+  validatePassword,
 };

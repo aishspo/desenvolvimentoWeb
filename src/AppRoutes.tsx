@@ -7,6 +7,8 @@ import ListaPastas from "./pages/ListarPastas/index.tsx";
 import Login from "./pages/Login/index.tsx";
 import Dashboard from "./pages/Dashboard/index.tsx";
 import ListarAlunos from "./pages/ListarAlunos/index.tsx";
+import StudentDashboard from "./components/Aluno-dashboard/index.tsx";
+import TeacherDashboard from "./components/Professor-dashboard/index.tsx";
 
 function AppRoutes() {
   return (
@@ -19,6 +21,8 @@ function AppRoutes() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/listarAlunos" element={<ListarAlunos/>} />
+        <Route path="/aluno-dashboard" element={<StudentDashboard />} />
+        <Route path="/professor-dashboard" element={<TeacherDashboard />} />
       </Routes>
     </BrowserRouter>
   );

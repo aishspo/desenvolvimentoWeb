@@ -36,12 +36,13 @@ app.use(
     secret: "shh",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, httpOnly: true },
+    cookie: { maxAge: 30000}
+    // cookie: { maxAge: 30000,secure: false, httpOnly: true },
   })
 );
 
-const { loginAluno } = require("./controladores/login");
-app.use("/auth", loginAluno);
+const { login} = require("./controladores/login");
+app.use("/auth", login);
 
 const rotaDashboard = require("./rotas/dashboard");
 app.use("/dashboard", rotaDashboard);
