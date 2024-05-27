@@ -1,24 +1,39 @@
-// responsável por receber os dados da requisição, validar esses dados e chamar o serviço para inserção no banco de dados
-
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { servicoUsuario } = require("../servicos/usuario");
+// Importações de bibliotecas e módulos
+const { servicoUsuario } = require("../servicos/servicoUsuario");
+const yup = require('yup');
 
+// Esquemas de validação usando yup
+const schemaAluno = yup.object({
+  nome: yup.string().required(),
+  email: yup.string().email().required(),
+  senha: yup.string().required(),
+});
+
+const schemaProfessor = yup.object({
+  nome: yup.string().required(),
+  email: yup.string().email().required(),
+  senha: yup.string().required(),
+  disciplina: yup.string().required(),
+});
+
+// Controladores
 const getUsuarios = async (req, res) => {
   const { ocupacao } = req.query;
 
   try {
-    let usuarios;
+    const operacoes = {
+      aluno: servicoUsuario.getAlunos,
+      professor: servicoUsuario.getProfessores,
+    };
 
-    if (ocupacao === "aluno") {
-      // Buscar todos os alunos
-      usuarios = await servicoUsuario.getAlunos();
-    } else if (ocupacao === "professor") {
-      // Buscar todos os professores
-      usuarios = await servicoUsuario.getProfessores();
-    } else {
-      return res.status(400).json({ error: "Ocupação inválida" });
+    const operacao = operacoes[ocupacao];
+    if (!operacao) {
+      res.status(400).json({ error: "Ocupação inválida" });
+      return;
     }
 
+    const usuarios = await operacao();
     res.status(200).json(usuarios);
   } catch (error) {
     console.error("Erro ao buscar usuários:", error);
@@ -29,43 +44,26 @@ const getUsuarios = async (req, res) => {
 const postUsuario = async (req, res) => {
   const { nome, email, senha, ocupacao, disciplina } = req.body;
 
-  if (!nome || !email || !senha || !ocupacao) {
-    return res.status(400).json({ error: "Todos os campos são obrigatórios" });
-  }
-
   try {
     if (ocupacao === "aluno") {
-      // Inserir aluno
+      await schemaAluno.validate({ nome, email, senha });
       await servicoUsuario.insereAluno(nome, email, senha);
     } else if (ocupacao === "professor") {
-      // Inserir professor
+      await schemaProfessor.validate({ nome, email, senha, disciplina });
       await servicoUsuario.insereProfessor(nome, email, senha, disciplina);
     } else {
-      return res.status(400).json({ error: "Ocupação inválida" });
+      res.status(400).json({ error: "Ocupação inválida" });
+      return;
     }
+
     res.status(201).json({ message: "Usuário cadastrado com sucesso" });
   } catch (error) {
-    if (
-      error === "Email já cadastrado para aluno" ||
-      error === "Email já cadastrado para professor"
-    ) {
-      return res.status(422).json({ error: error });
+    if (error.name === 'ValidationError') {
+      res.status(400).json({ error: error.errors.join(", ") });
     } else {
       console.error("Erro ao cadastrar usuário:", error);
       res.status(500).json({ error: "Erro interno do servidor" });
     }
-  }
-};
-
-const createAluno = async (req, res) => {
-  const { nome, email, senha } = req.body;
-
-  try {
-    await userService.createUser({ nome, email, senha });
-    res.status(201).send('Usuário criado com sucesso');
-  } catch (error) {
-    console.error('Erro ao criar usuário', error);
-    res.status(500).send('Erro ao criar usuário');
   }
 };
 
@@ -75,11 +73,10 @@ const patchAluno = async (req, res) => {
 
   try {
     if (!nome && !senha) {
-      return res
-        .status(400)
-        .json({
-          error: "Pelo menos um campo (nome ou senha) deve ser fornecido.",
-        });
+      res.status(400).json({
+        error: "Pelo menos um campo (nome ou senha) deve ser fornecido."
+      });
+      return;
     }
 
     await servicoUsuario.atualizaAluno(email, nome, senha);
@@ -91,7 +88,7 @@ const patchAluno = async (req, res) => {
 };
 
 const deleteAluno = async (req, res) => {
-  const email = req.params.email;
+  const { email } = req.params;
 
   try {
     await servicoUsuario.deletarAluno(email);
@@ -103,7 +100,11 @@ const deleteAluno = async (req, res) => {
 };
 
 const getPastasAluno = async (req, res) => {
-  const email = req.params.email;
+  if (!req.session.user) {
+    return res.status(401).json({ message: "Usuário não autenticado" })
+  }
+
+  const email = req.session.user.email;
 
   try {
     const pastas = await servicoUsuario.listarPastasAluno(email);
@@ -114,11 +115,10 @@ const getPastasAluno = async (req, res) => {
   }
 };
 
-
 module.exports = {
   getUsuarios,
   postUsuario,
-  deleteAluno,
   patchAluno,
+  deleteAluno,
   getPastasAluno,
 };

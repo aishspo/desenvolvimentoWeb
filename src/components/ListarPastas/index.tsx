@@ -34,12 +34,12 @@ const ListaPastas: React.FC = () => {
   const [novaPastaNome, setNovaPastaNome] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const { email } = useParams<{ email: string }>();
+  const { id } = useParams<{ id: int }>();
 
   useEffect(() => {
     const fetchPastas = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/usuario/${email}/pastas`);
+        const response = await axios.get(`http://localhost:8000/aluno-dashboard/pastas`);
         setPastas(response.data);
       } catch (error) {
         setError(error.message);
@@ -47,14 +47,14 @@ const ListaPastas: React.FC = () => {
     };
 
     fetchPastas();
-  }, [email]);
+  }, [id]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     try {
-      await axios.post(`http://localhost:8000/pasta/${email}/pastas`, { nome: novaPastaNome });
-      const response = await axios.get(`http://localhost:8000/usuario/${email}/pastas`);
+      await axios.post(`http://localhost:8000/aluno-dashboard/pastas`, { nome: novaPastaNome }, { withCredentials: true });
+      const response = await axios.get(`http://localhost:8000/aluno-dashboard/pastas`, { withCredentials: true });
       setPastas(response.data);
       setNovaPastaNome('');
       setIsModalOpen(false);

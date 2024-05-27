@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const express = require("express");
-const app = express();
 const session = require("express-session");
-
-// Configuração do middleware de parse do corpo da requisição
-const bodyParser = require("body-parser");
-app.use(bodyParser.json());
-
 const cors = require("cors");
+// const bodyParser = require("body-parser");
+
+const app = express();
+const port = 8000;
+
+app.use(express.json());
+
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -15,38 +16,27 @@ app.use(
   })
 );
 
-// necessário para inserir usuários com o método post
-app.use(express.json());
-
-const port = 8000;
-
-const rotaUsuario = require("./rotas/usuario");
-app.use("/usuario", rotaUsuario);
-
-const rotaPasta = require("./rotas/pasta");
-app.use("/pasta", rotaPasta);
-
-const rotaDocumento = require("./rotas/documento");
-app.use("/documento", rotaDocumento);
-
-app.use(express.json());
-
+// Configuração session
 app.use(
   session({
     secret: "shh",
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 30000}
-    // cookie: { maxAge: 30000,secure: false, httpOnly: true },
+    cookie: { secure: false, maxAge: 30000 }, // Definido em milissegundos, 30000 ms = 30 segundos
   })
 );
 
-const { login} = require("./controladores/login");
-app.use("/auth", login);
+// Importação de rotas
+const rotaUsuario = require("./rotas/usuario");
+const rotaPasta = require("./rotas/pasta");
+const rotaDocumento = require("./rotas/documento");
+const rotaLogin = require("./rotas/rotaLogin");
 
-const rotaDashboard = require("./rotas/dashboard");
-app.use("/dashboard", rotaDashboard);
+app.use("/usuario", rotaUsuario);
+app.use("/aluno-dashboard", rotaPasta);
+app.use("/documento", rotaDocumento)
+app.use('/login', rotaLogin);
 
 app.listen(port, () => {
-  console.log(`Escutando a porta ${port}`);
+  console.log(`Rodando na porta http://localhost:${port}`);
 });

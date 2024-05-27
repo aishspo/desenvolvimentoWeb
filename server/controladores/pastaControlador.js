@@ -3,18 +3,6 @@
 
 const { servicoPasta } = require("../servicos/pasta");
 
-// const getPastasPorAluno = async (req, res) => {
-//     const { aluno_email } = req.query;
-
-//     try {
-//         const pastas = await servicoPasta.getPasta(aluno_email);
-//         res.status(200).json(pastas);
-//       } catch (error) {
-//         console.error('Erro ao buscar pastas:', error);
-//         res.status(500).json({ error: 'Erro interno do servidor' });
-//       }
-// }
-
 const postPasta = async (req, res) => {
   const { email } = req.params; // Obtenha o email do aluno a partir dos parâmetros da URL
   const { nome } = req.body;
@@ -32,27 +20,15 @@ const postPasta = async (req, res) => {
   }
 };
 
-const getPastasAluno = async (req, res) => {
-  const email = req.params.email;
-
-  try {
-    const pastas = await servicoPasta.listarPastasAluno(email);
-    res.status(200).json(pastas);
-  } catch (error) {
-    console.error("Erro ao listar pastas do aluno:", error);
-    res.status(500).json({ error: "Erro ao listar pastas do aluno" });
-  }
-};
-
 const getPastaPorId = async (req, res) => {
-  const { id, email } = req.params;
+  const { id } = req.params;
 
   try {
-    if (!userId) {
+    if (!email) {
       return res.status(401).send("Usuário não autenticado");
     }
-    const userId = req.session.userId;
-    const pasta = await servicoPasta.getPastaPorId(id, userId);
+    const email = req.session.email;
+    const pasta = await servicoPasta.getPastaPorId(id, email);
     if (!pasta) {
       return res
         .status(404)
@@ -66,7 +42,7 @@ const getPastaPorId = async (req, res) => {
 };
 
 module.exports = {
-  getPastasAluno,
+  // getPastasAluno,
   postPasta,
   getPastaPorId,
 };
