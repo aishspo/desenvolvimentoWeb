@@ -1,10 +1,11 @@
-// responsável por receber os dados da requisição, validar esses dados e chamar o serviço para inserção no banco de dados
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const { servicoPasta } = require("../servicos/pasta");
+const { servicoUsuario } = require("../servicos/servicoUsuario");
+
 
 const postPasta = async (req, res) => {
-  const { email } = req.params; // Obtenha o email do aluno a partir dos parâmetros da URL
+  const { email } = req.session.user.email;
   const { nome } = req.body;
 
   if (!nome) {
@@ -20,29 +21,30 @@ const postPasta = async (req, res) => {
   }
 };
 
-const getPastaPorId = async (req, res) => {
-  const { id } = req.params;
+const getPastasAluno = async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ message: "Usuário não autenticado" });
+  }
+
+  const email = req.session.user.email;
+  console.log("Email do usuário autenticado:", email);
 
   try {
-    if (!email) {
-      return res.status(401).send("Usuário não autenticado");
-    }
-    const email = req.session.email;
-    const pasta = await servicoPasta.getPastaPorId(id, email);
-    if (!pasta) {
-      return res
-        .status(404)
-        .json({ error: "Pasta não encontrada ou não pertence ao aluno" });
-    }
-    res.json(pasta);
+    const pastas = await servicoUsuario.listarPastasAluno(email);
+    console.log("Pastas retornadas pelo serviço:", pastas);
+    res.status(200).json(pastas);
   } catch (error) {
-    console.error("Erro ao obter pasta:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    console.error('Erro ao listar pastas do aluno:', error);
+    res.status(500).json({ error: 'Erro ao listar pastas do aluno' });
   }
 };
 
 module.exports = {
-  // getPastasAluno,
-  postPasta,
-  getPastaPorId,
+  getPastasAluno,
 };
+
+
+module.exports = {
+  getPastasAluno,
+  postPasta,
+}

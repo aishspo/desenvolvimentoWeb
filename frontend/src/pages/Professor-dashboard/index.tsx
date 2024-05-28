@@ -1,7 +1,13 @@
 import React from 'react';
+import ListarAlunos from '../../pages/ListarAlunos';
 
 const TeacherDashboard: React.FC = () => {
-  return <div>Welcome to the Teacher Dashboard</div>;
+  return (
+    <>
+    <p>OI</p>
+    <ListarAlunos/>
+    </>
+  )
 };
 
 export default TeacherDashboard;

@@ -22,13 +22,13 @@ app.use(
     secret: "shh",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, maxAge: 30000 }, // Definido em milissegundos, 30000 ms = 30 segundos
+    cookie: { secure: false}, // Definido em milissegundos, 30000 ms = 30 segundos
   })
 );
 
 // Importação de rotas
-const rotaUsuario = require("./rotas/usuario");
-const rotaPasta = require("./rotas/pasta");
+const rotaUsuario = require("./rotas/rotaUsuario");
+const rotaPasta = require("./rotas/rotaPasta");
 const rotaDocumento = require("./rotas/documento");
 const rotaLogin = require("./rotas/rotaLogin");
 

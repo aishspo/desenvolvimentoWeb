@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import imagemPasta from "./assets/pasta-icon.png";
-import imagemCriarPasta from "./assets/criar-pasta-icon.png"
+import imagemCriarPasta from "./assets/criar-pasta-icon.png";
 import Modal from "../Modal/index"; // Certifique-se de ajustar o caminho conforme necessário
 import styled from "styled-components";
-
 
 // Estilização específica do botão
 const BotaoCriarPasta = styled.button`
@@ -34,12 +33,13 @@ const ListaPastas: React.FC = () => {
   const [novaPastaNome, setNovaPastaNome] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const { id } = useParams<{ id: int }>();
+  const { id } = useParams<{ id: string }>(); // Certifique-se de que id é uma string
 
   useEffect(() => {
     const fetchPastas = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/aluno-dashboard/pastas`);
+        const response = await axios.get(`http://localhost:8000/aluno-dashboard/pastas`, { withCredentials: true });
+        console.log("Dados recebidos da API:", response.data); // Log detalhado dos dados recebidos
         setPastas(response.data);
       } catch (error) {
         setError(error.message);
@@ -65,16 +65,21 @@ const ListaPastas: React.FC = () => {
 
   return (
     <div>
-
       <h2>Pastas do Aluno</h2>
       {error && <p>Erro ao carregar as pastas: {error}</p>}
       <ul>
-        {pastas.map(pasta => (
-          <li key={pasta.id}>
-            <img src={imagemPasta} alt="Ícone de Pasta" /> {/* Imagem da pasta */}
-            {pasta.nome}
-          </li>
-        ))}
+        {pastas.map((pasta) => {
+          console.log("Renderizando pasta:", pasta); // Log dos dados da pasta durante a renderização
+          return (
+            <li key={pasta.id}>
+              <a href="">
+
+              <img src={imagemPasta} alt="Ícone de Pasta" />
+              <span>{pasta.nome}</span> {/* Certifique-se de que o nome da pasta está sendo renderizado */}
+              </a>
+            </li>
+          );
+        })}
       </ul>
 
       <BotaoCriarPasta onClick={() => setIsModalOpen(true)}>

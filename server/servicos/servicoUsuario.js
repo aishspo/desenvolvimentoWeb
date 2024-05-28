@@ -3,55 +3,95 @@
 const { pool } = require("../server.js");
 
 const servicoUsuario = {
-  findUserByUsernameAndPassword: (email, senha) => {
-    const query = `
-        SELECT 'aluno' AS email FROM alunos WHERE email = ? AND senha = ?
-        UNION
-        SELECT 'professor' AS email FROM professores WHERE email = ? AND senha = ?;
-    `;
-    return new Promise((resolve, reject) => {
-      pool.query(query, [email, senha, email, senha], (err, results) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(results);
-        }
+    verificaEmailExistenteAluno: (email) => {
+      return new Promise((resolve, reject) => {
+        pool.query(
+          "SELECT COUNT(*) AS total FROM alunos WHERE email = ?",
+          [email],
+          (error, results) => {
+            if (error) {
+              reject(error);
+            } else {
+              const totalAlunos = results[0].total;
+              resolve(totalAlunos > 0); // Resolve com true se o email já existe para alunos, caso contrário, resolve com false
+            }
+          }
+        );
       });
-    });
-  },
-
-  insereAluno: async (nome, email, senha) => {
-    try {
-      const emailExistente = await servicoUsuario.verificaEmailExistenteAluno(
-        email
-      );
-      if (emailExistente) {
-        throw new Error("Email já cadastrado para aluno");
-      }
-      const sql = "INSERT INTO alunos (nome, email, senha) VALUES (?, ?, ?)";
-      const [result] = await pool.query(sql, [nome, email, senha]);
-
-      return result.insertId;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  insereProfessor: async (nome, email, senha, disciplina) => {
-    try {
-      const emailExistente =
-        await servicoUsuario.verificaEmailExistenteProfessor(email);
-      if (emailExistente) {
-        throw new Error("Email já cadastrado para professor");
-      }
-      const sql =
-        "INSERT INTO professores (nome, email, senha, disciplina) VALUES (?, ?, ?, ?)";
-      const [result] = await pool.query(sql, [nome, email, senha, disciplina]);
-      return result.insertId;
-    } catch (error) {
-      throw error;
-    }
-  },
+    },
+  
+    verificaEmailExistenteProfessor: (email) => {
+      return new Promise((resolve, reject) => {
+        pool.query(
+          "SELECT COUNT(*) AS total FROM professores WHERE email = ?",
+          [email],
+          (error, results) => {
+            if (error) {
+              reject(error);
+            } else {
+              const totalProfessores = results[0].total;
+              resolve(totalProfessores > 0); // Resolve com true se o email já existe para professores, caso contrário, resolve com false
+            }
+          }
+        );
+      });
+    },
+  
+    insereAluno: (nome, email, senha) => {
+      return new Promise((resolve, reject) => {
+        // Inserir aluno se o email não estiver cadastrado
+        servicoUsuario
+          .verificaEmailExistenteAluno(email)
+          .then((emailExistente) => {
+            if (emailExistente) {
+              reject("Email já cadastrado para aluno");
+            } else {
+              const sql =
+                "INSERT INTO alunos (nome, email, senha) VALUES (?, ?, ?)";
+              pool.query(sql, [nome, email, senha], (error, results) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve(results);
+                }
+              });
+            }
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+  
+    insereProfessor: (nome, email, senha, disciplina) => {
+      return new Promise((resolve, reject) => {
+        // Inserir professor se o email não estiver cadastrado
+        servicoUsuario
+          .verificaEmailExistenteProfessor(email)
+          .then((emailExistente) => {
+            if (emailExistente) {
+              reject("Email já cadastrado para professor");
+            } else {
+              const sql =
+                "INSERT INTO professores (nome, email, senha, disciplina) VALUES (?, ?, ?, ?)";
+              pool.query(
+                sql,
+                [nome, email, senha, disciplina],
+                (error, results) => {
+                  if (error) {
+                    reject(error);
+                  } else {
+                    resolve(results);
+                  }
+                }
+              );
+            }
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
 
   atualizaAluno: async (email, nome, senha) => {
     try {

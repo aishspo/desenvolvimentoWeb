@@ -2,14 +2,14 @@
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const db = require("../server.js"); // arquivo de configuração do banco de dados
+const { pool } = require("../server.js"); // arquivo de configuração do banco de dados
 
 const servicoPasta = {
   criarPasta: (aluno_email, nomePasta) => {
     return new Promise((resolve, reject) => {
       try {
         // Verifica se o aluno com o email fornecido existe
-        const aluno = db.query("SELECT * FROM alunos WHERE email = ?", [
+        const aluno = pool.query("SELECT * FROM alunos WHERE email = ?", [
           aluno_email,
         ]);
 
@@ -19,7 +19,7 @@ const servicoPasta = {
         }
 
         // Cria a pasta associada ao aluno correspondente
-        db.query("INSERT INTO pastas (nome, aluno_email) VALUES (?, ?)", [
+        pool.query("INSERT INTO pastas (nome, aluno_email) VALUES (?, ?)", [
           nomePasta,
           aluno_email,
         ]);
@@ -34,7 +34,7 @@ const servicoPasta = {
   getPasta: (aluno_email) => {
     return new Promise((resolve, reject) => {
       const query = `SELECT * FROM pastas WHERE aluno_email = ?`;
-      db.query(query, [aluno_email], (error, result) => {
+      pool.query(query, [aluno_email], (error, result) => {
         if (error) {
           reject(new Error("Erro ao buscar pastas do aluno"));
         } else {
@@ -46,37 +46,36 @@ const servicoPasta = {
 
   listarPastasAluno: (email) => {
     return new Promise((resolve, reject) => {
-      const sql =
-        "SELECT pastas.id, pastas.nome FROM pastas INNER JOIN alunos ON pastas.aluno_email = alunos.email WHERE alunos.email = ?";
-      db.query(sql, [email], (error, results) => {
+      const sql = `
+        SELECT pastas.id, pastas.nome 
+        FROM pastas 
+        INNER JOIN alunos ON pastas.aluno_email = alunos.email 
+        WHERE alunos.email = ?`;
+  
+      console.log("Executando query SQL:", sql);
+      console.log("Parâmetros:", [email]);
+  
+      pool.query(sql, [email], (error, results) => {
         if (error) {
+          console.error("Erro ao executar a query:", error);
           reject(error);
         } else {
-          resolve(results);
+          console.log("Resultados do banco de dados:", results);
+  
+          const pastas = results.map((pasta) => ({
+            id: pasta.id,
+            nome: pasta.nome,
+          }));
+          
+          console.log("Resultados mapeados:", pastas);
+          resolve(pastas);
         }
       });
     });
   },
-
-  getPastaPorId: (idPasta, emailAluno) => {
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT * FROM pastas WHERE id = ? AND aluno_email = ?";
-      try {
-        const pasta = db.query(sql, [idPasta, emailAluno], (error, results) => {
-          if (pasta.length === 0) {
-            reject(error);
-          } else {
-            resolve(results);
-          }
-        });
-        return pasta[0];
-      } catch (error) {
-        throw new Error(`Erro ao obter pasta: ${error.message}`);
-      }
-    });
-  },
+  
 };
 
 module.exports = {
-  servicoPasta
+  servicoPasta,
 };

@@ -16,7 +16,7 @@ const Alunos = () => {
     try {
       const response = await axios.get("http://localhost:8000/usuario?ocupacao=aluno");
       setAlunos(response.data);
-    } catch (error: any) {  // Typecasting error to any to use AxiosError
+    } catch (error: any) { 
       if (axios.isAxiosError(error)) {
         setError(error.message);
       } else {
@@ -39,6 +39,11 @@ const Alunos = () => {
       }
     }
   };
+
+  
+  // const updateAluno = (email: string) => {
+  //   navigate(`/editar-aluno/${email}`);
+  // };
 
   useEffect(() => {
     fetchAlunos();
