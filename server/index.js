@@ -2,10 +2,12 @@
 const express = require("express");
 const session = require("express-session");
 const cors = require("cors");
-// const bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
+const alunoRoutes = require('./rotas/alunoRoutes');
 
 const app = express();
 const port = 8000;
+app.use(bodyParser.json());
 
 app.use(express.json());
 
@@ -36,6 +38,7 @@ app.use("/usuario", rotaUsuario);
 app.use("/aluno-dashboard", rotaPasta);
 app.use("/documento", rotaDocumento)
 app.use('/login', rotaLogin);
+app.use('/api', alunoRoutes);
 
 app.listen(port, () => {
   console.log(`Rodando na porta http://localhost:${port}`);

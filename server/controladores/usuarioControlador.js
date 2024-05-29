@@ -46,28 +46,38 @@ const postUsuario = async (req, res) => {
   const { nome, email, senha, ocupacao, disciplina } = req.body;
 
   if (!nome || !email || !senha || !ocupacao) {
+    console.warn('Campos obrigatórios faltando na solicitação');
     return res.status(400).json({ error: "Todos os campos são obrigatórios" });
   }
 
+  console.log(`Tentando cadastrar usuário: Nome=${nome}, Email=${email}, Ocupação=${ocupacao}`);
+
   try {
     if (ocupacao === "aluno") {
+      console.log('Ocupação: aluno. Chamando insereAluno.');
       // Inserir aluno
       await servicoUsuario.insereAluno(nome, email, senha);
+      console.log('Aluno inserido com sucesso');
     } else if (ocupacao === "professor") {
+      console.log('Ocupação: professor. Chamando insereProfessor.');
       // Inserir professor
       await servicoUsuario.insereProfessor(nome, email, senha, disciplina);
+      console.log('Professor inserido com sucesso');
     } else {
+      console.warn('Ocupação inválida fornecida');
       return res.status(400).json({ error: "Ocupação inválida" });
     }
+    console.log('Usuário cadastrado com sucesso');
     res.status(201).json({ message: "Usuário cadastrado com sucesso" });
   } catch (error) {
     if (
       error === "Email já cadastrado para aluno" ||
       error === "Email já cadastrado para professor"
     ) {
+      console.warn(`Erro de validação: ${error}`);
       return res.status(422).json({ error: error });
     } else {
-      console.error("Erro ao cadastrar usuário:", error);
+      console.error(`Erro ao cadastrar usuário: ${error.message}`);
       res.status(500).json({ error: "Erro interno do servidor" });
     }
   }

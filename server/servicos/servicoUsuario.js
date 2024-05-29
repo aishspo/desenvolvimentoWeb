@@ -3,22 +3,27 @@
 const { pool } = require("../server.js");
 
 const servicoUsuario = {
-    verificaEmailExistenteAluno: (email) => {
-      return new Promise((resolve, reject) => {
-        pool.query(
-          "SELECT COUNT(*) AS total FROM alunos WHERE email = ?",
-          [email],
-          (error, results) => {
-            if (error) {
-              reject(error);
-            } else {
-              const totalAlunos = results[0].total;
-              resolve(totalAlunos > 0); // Resolve com true se o email já existe para alunos, caso contrário, resolve com false
-            }
+  verificaEmailExistenteAluno: (email) => {
+    return new Promise((resolve, reject) => {
+      console.log(`Verificando se o email existe para aluno: ${email}`);
+  
+      pool.query(
+        "SELECT COUNT(*) AS total FROM alunos WHERE email = ?",
+        [email],
+        (error, results) => {
+          if (error) {
+            console.error(`Erro ao executar query de verificação de email: ${error.message}`);
+            reject(error);
+          } else {
+            const totalAlunos = results[0].total;
+            console.log(`Resultado da query: ${totalAlunos} alunos encontrados com o email ${email}`);
+            resolve(totalAlunos > 0); // Resolve com true se o email já existe para alunos, caso contrário, resolve com false
           }
-        );
-      });
-    },
+        }
+      );
+    });
+  },
+  
   
     verificaEmailExistenteProfessor: (email) => {
       return new Promise((resolve, reject) => {
@@ -39,30 +44,37 @@ const servicoUsuario = {
   
     insereAluno: (nome, email, senha) => {
       return new Promise((resolve, reject) => {
-        // Inserir aluno se o email não estiver cadastrado
+        console.log(`Tentando inserir aluno: Nome=${nome}, Email=${email}`);
+        
+        // Verificar se o email já está cadastrado
         servicoUsuario
           .verificaEmailExistenteAluno(email)
           .then((emailExistente) => {
+            console.log(`Resultado da verificação de email: ${emailExistente}`);
             if (emailExistente) {
+              console.warn(`Email já cadastrado para aluno: ${email}`);
               reject("Email já cadastrado para aluno");
             } else {
-              const sql =
-                "INSERT INTO alunos (nome, email, senha) VALUES (?, ?, ?)";
+              const sql = "INSERT INTO alunos (nome, email, senha) VALUES (?, ?, ?)";
+              console.log(`Executando query: ${sql}`);
               pool.query(sql, [nome, email, senha], (error, results) => {
                 if (error) {
+                  console.error(`Erro ao inserir aluno no banco de dados: ${error.message}`);
                   reject(error);
                 } else {
+                  console.log(`Aluno inserido com sucesso: ID=${results.insertId}`);
                   resolve(results);
                 }
               });
             }
           })
           .catch((error) => {
+            console.error(`Erro ao verificar se email existe: ${error.message}`);
             reject(error);
           });
       });
     },
-  
+    
     insereProfessor: (nome, email, senha, disciplina) => {
       return new Promise((resolve, reject) => {
         // Inserir professor se o email não estiver cadastrado
