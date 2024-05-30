@@ -2,7 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const { pool } = require("../server.js"); // arquivo de configuração do banco de dados
+const { pool } = require("../config/server.js"); // arquivo de configuração do banco de dados
 
 const servicoPasta = {
   criarPasta: (aluno_email, nomePasta) => {

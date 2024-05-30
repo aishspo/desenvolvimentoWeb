@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-// services/loginService.js
-const servicoAutenticacao = require('./servicoAutenticacao');
-// const bcrypt = require('bcryptjs');
+const autenticacaoService = require('./autenticacaoService');
 
 /**
  * Login user.
@@ -13,7 +10,7 @@ const loginUser = async (req, res) => {
 
   try {
     // Find the user by email
-    const userResult = await servicoAutenticacao.findUserByEmail(email);
+    const userResult = await autenticacaoService.findUserByEmail(email);
 
     // If no user is found, respond with 401 Unauthorized
     if (!userResult) {
@@ -21,11 +18,11 @@ const loginUser = async (req, res) => {
     }
 
     // Validate the provided password against the stored hashed password
-    const isPasswordValid = await servicoAutenticacao.validatePassword(password, userResult.user.senha);
+    const isPasswordValid = await autenticacaoService.validatePassword(password, userResult.user.senha);
 
     // If the password is not valid, respond with 401 Unauthorized
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: 'Invalid email or password' }); 
     }
 
     // Set up the session with user information

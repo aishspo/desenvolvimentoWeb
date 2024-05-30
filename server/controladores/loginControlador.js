@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const servicoUsuario = require("../servicos/servicoUsuario");
+const alunoService = require("../servicos/alunoService");
 
 const login = async (req, res) => {
   const { email, senha } = req.body;
   try {
       console.log('Tentando encontrar usuário com email:', email);
-      const results = await servicoUsuario.findUserByUsernameAndPassword(email, senha);
+      const results = await alunoService.findUserByUsernameAndPassword(email, senha);
       if (results.length > 0) {
           const user = results[0];
 
@@ -16,15 +16,32 @@ const login = async (req, res) => {
               type: user.type
           };
           
-          console.log('Login bem-sucedido para usuário:', user.email);
-          res.send({ message: 'Login successful', user: req.session.user });
-      } else {
-          console.log('Credenciais inválidas para email:', email);
-          res.status(401).send({ message: 'Invalid credentials' });
+          // Redirecionando para dashboards diferentes com base no tipo de usuário
+      if (user.type === 'aluno') {
+        res.status(200).json({
+          message: 'Login realizado com sucesso!',
+          dashboard: 'alunoDashboard',
+          user: req.session.user
+        });
+      } else if (user.type === 'professor') {
+        res.status(200).json({
+          message: 'Login realizado com sucesso!',
+          dashboard: 'professorDashboard',
+          user: req.session.user
+        });
       }
+    } else {
+      // Caso nenhum usuário seja encontrado
+      res.status(401).json({
+        message: 'Email ou senha inválidos.'
+      });
+    }
   } catch (error) {
-      console.error('Erro ao conectar ao banco de dados:', error);
-      res.status(500).send({ message: 'Erro ao conectar ao banco de dados', error });
+    // Tratando erros
+    console.error('Erro ao tentar fazer login:', error);
+    res.status(500).json({
+      message: 'Erro interno do servidor. Por favor, tente novamente mais tarde.'
+    });
   }
 };
 

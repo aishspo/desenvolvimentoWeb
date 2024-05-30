@@ -8,7 +8,7 @@ const LogoutButton = () => {
         try {
             const response = await axios.post('http://localhost:8000/login/logout');
             alert(response.data.message);
-            navigate('/login');
+            navigate(-1);
         } catch (error) {
             alert('Erro ao tentar sair');
         }

@@ -13,7 +13,7 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Cadastro />} />
+        <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/alteracao" element={<AlteracaoUsuario />} />
         <Route path="/usuario/:email/pastas" element={<ListaPastas />} />
 
@@ -21,7 +21,7 @@ function AppRoutes() {
           <Route path="/usuario/:email/pastas" element={<ListaPastas />} />
         </Route>  */}
 
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/listarAlunos" element={<ListarAlunos />} />
         <Route path="/aluno-dashboard" element={<StudentDashboard />} />
         <Route path="/professor-dashboard" element={<TeacherDashboard />} />

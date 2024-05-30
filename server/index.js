@@ -37,8 +37,8 @@ const rotaLogin = require("./rotas/rotaLogin");
 app.use("/usuario", rotaUsuario);
 app.use("/aluno-dashboard", rotaPasta);
 app.use("/documento", rotaDocumento)
+app.use('/cadastro', alunoRoutes);
 app.use('/login', rotaLogin);
-app.use('/api', alunoRoutes);
 
 app.listen(port, () => {
   console.log(`Rodando na porta http://localhost:${port}`);

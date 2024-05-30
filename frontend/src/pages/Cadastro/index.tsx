@@ -1,115 +1,72 @@
-import React, { useState } from "react";
-import axios from "axios";
-import IUsuario from "../../types/IUsuario";
-import { useNavigate } from "react-router-dom";
-import {
-  Container,
-  Formulario,
-  Rotulo,
-  Input,
-  Button,
-  ButtonGroup,
-  CampoDigitacao,
-} from "./styles";
+import React, { useState } from 'react';
+import axios from 'axios';
 
-const Cadastro: React.FC = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [ocupacao, setOcupacao] = useState("");
-  const [disciplina, setDisciplina] = useState("");
-  const navigate = useNavigate();
+interface FormData {
+    nome: string;
+    email: string;
+    senha: string;
+    ocupacao: 'aluno' | 'professor';
+    disciplina?: string;
+}
 
-  const handleBack = () => {
-    navigate(-1);
-  };
+const CadastroUsuario: React.FC = () => {
+    const [formData, setFormData] = useState<FormData>({
+        nome: '',
+        email: '',
+        senha: '',
+        ocupacao: 'aluno',
+        disciplina: ''
+    });
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            await axios.post('http://localhost:8000/cadastro', formData);
+            alert('Usuário cadastrado com sucesso');
+        } catch (error) {
+            console.error('Erro ao cadastrar usuário:', error);
+            alert('Erro ao cadastrar usuário');
+        }
+    };
 
-  const handleSenhaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSenha(e.target.value);
-  };
+    return (
+        <div>
+            <h1>Cadastro de Usuário</h1>
+            <form onSubmit={handleSubmit}>
+                <label htmlFor="nome">Nome:</label><br />
+                <input type="text" id="nome" name="nome" value={formData.nome} onChange={handleChange} required /><br /><br />
 
-  const handleOcupacaoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOcupacao(e.target.value);
-  };
+                <label htmlFor="email">Email:</label><br />
+                <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required /><br /><br />
 
-  const handleDisciplinaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDisciplina(e.target.value);
-  };
+                <label htmlFor="senha">Senha:</label><br />
+                <input type="password" id="senha" name="senha" value={formData.senha} onChange={handleChange} required /><br /><br />
 
-  const handleSubmit = async () => {
-    try {
-      const dadosUsuario: IUsuario = {
-        nome: name,
-        email: email,
-        senha: senha,
-        ocupacao: ocupacao,
-        disciplina: disciplina, // Inclua disciplina apenas se o usuário for um professor
-      };
+                <label htmlFor="ocupacao">Ocupação:</label><br />
+                <select id="ocupacao" name="ocupacao" value={formData.ocupacao} onChange={handleChange} required>
+                    <option value="aluno">Aluno</option>
+                    <option value="professor">Professor</option>
+                </select><br /><br />
 
-      await axios.post<IUsuario>("http://localhost:8000/usuario", dadosUsuario);
-      alert("Usuário cadastrado com sucesso!");
-    } catch (error) {
-      alert("Erro ao cadastrar usuário");
-    }
-  };
+                {formData.ocupacao === 'professor' && (
+                    <>
+                        <label htmlFor="disciplina">Disciplina:</label><br />
+                        <input type="text" id="disciplina" name="disciplina" value={formData.disciplina} onChange={handleChange} /><br /><br />
+                    </>
+                )}
 
-  return (
-    <Container>
-      <Formulario>
-        <CampoDigitacao>
-          <Rotulo>Nome</Rotulo>
-          <Input
-            type="text"
-            value={name}
-            placeholder="Nome completo"
-            onChange={handleNameChange}
-          />
-        </CampoDigitacao>
-        <CampoDigitacao>
-          <Rotulo>Email</Rotulo>
-          <Input
-            type="email"
-            value={email}
-            placeholder="exemplo@email.com"
-            onChange={handleEmailChange}
-          />
-        </CampoDigitacao>
-        <CampoDigitacao>
-          <Rotulo>Senha</Rotulo>
-          <Input
-            type="password"
-            value={senha}
-            placeholder="Insira sua senha"
-            onChange={handleSenhaChange}
-          />
-        </CampoDigitacao>
-        <CampoDigitacao>
-          <Rotulo>Ocupação</Rotulo>
-          <Input type="text" value={ocupacao} onChange={handleOcupacaoChange} />
-        </CampoDigitacao>
-        <CampoDigitacao>
-          <Rotulo>Disciplina</Rotulo>
-          <Input
-            type="text"
-            value={disciplina}
-            onChange={handleDisciplinaChange}
-          />
-        </CampoDigitacao>
-        <ButtonGroup>
-          <Button onClick={handleSubmit}>Cadastrar</Button>
-          <Button onClick={handleBack}>Voltar</Button>
-        </ButtonGroup>
-      </Formulario>
-    </Container>
-  );
+                <button type="submit">Cadastrar</button>
+            </form>
+        </div>
+    );
 };
 
-export default Cadastro;
+export default CadastroUsuario;

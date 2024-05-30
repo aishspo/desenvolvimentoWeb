@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-useless-catch */
-const { pool } = require("../server.js");
+const { pool } = require("../config/server");
 
 const servicoUsuario = {
   verificaEmailExistenteAluno: (email) => {
